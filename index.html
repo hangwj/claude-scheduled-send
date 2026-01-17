@@ -195,16 +195,6 @@
             color: #999;
         }
 
-        .input-box.scheduled-readonly {
-            color: #999;
-            cursor: default;
-            background: #FAFAF9;
-        }
-
-        .input-box.scheduled-editing {
-            border-color: #D97757;
-        }
-
         .input-actions {
             position: absolute;
             right: 12px;
@@ -261,48 +251,37 @@
             opacity: 0.6;
         }
 
-        /* Schedule Status Bar */
-        .schedule-status {
-            display: none;
+        /* Scheduled Message Styles */
+        .message.scheduled {
+            flex-direction: row-reverse;
+        }
+
+        .message.scheduled .message-content {
+            background: #FFFCF9;
+            border-left: 3px solid #D97757;
+            padding: 12px 16px;
+            border-radius: 12px;
+            position: relative;
+            padding-bottom: 32px;
+        }
+
+        .scheduled-badge {
+            position: absolute;
+            bottom: 8px;
+            right: 8px;
+            display: flex;
             align-items: center;
-            padding: 8px 16px;
-            margin-top: 8px;
-            font-size: 13px;
-            color: #666;
-            gap: 12px;
+            gap: 4px;
+            background: #F5EDE4;
+            color: #5C4A3A;
+            font-size: 12px;
+            padding: 4px 8px;
+            border-radius: 12px;
         }
 
-        .schedule-status.active {
-            display: flex;
-        }
-
-        .schedule-info {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .schedule-icon {
-            font-size: 14px;
-        }
-
-        .schedule-actions {
-            display: flex;
-            gap: 12px;
-            margin-left: auto;
-        }
-
-        .schedule-action-link {
-            color: #1F1F1F;
-            text-decoration: none;
-            font-weight: 500;
-            cursor: pointer;
-            border-bottom: 1px solid transparent;
-            transition: border-color 0.2s;
-        }
-
-        .schedule-action-link:hover {
-            border-bottom-color: #1F1F1F;
+        .scheduled-badge svg {
+            width: 12px;
+            height: 12px;
         }
 
         /* Modal Overlay */
@@ -542,17 +521,6 @@
                         </div>
                     </div>
 
-                    <!-- Schedule Status Bar -->
-                    <div class="schedule-status" id="scheduleStatus">
-                        <div class="schedule-info">
-                            <span class="schedule-icon" id="scheduleIcon">⏰</span>
-                            <span id="scheduleText">Scheduled for 9:00 PM (in 2h 15m)</span>
-                        </div>
-                        <div class="schedule-actions">
-                            <a class="schedule-action-link" id="editScheduleBtn">Edit</a>
-                            <a class="schedule-action-link" id="cancelScheduleBtn">Cancel</a>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
@@ -616,9 +584,6 @@
     <script>
         // State management
         let currentMessage = '';
-        let scheduledMessage = '';
-        let isScheduled = false;
-        let isEditingSchedule = false;
 
         // Elements
         const welcomeState = document.getElementById('welcomeState');
@@ -631,11 +596,6 @@
         const modalOverlay = document.getElementById('modalOverlay');
         const modalClose = document.getElementById('modalClose');
         const scheduleOption = document.getElementById('scheduleOption');
-        const scheduleStatus = document.getElementById('scheduleStatus');
-        const scheduleText = document.getElementById('scheduleText');
-        const scheduleIcon = document.getElementById('scheduleIcon');
-        const editScheduleBtn = document.getElementById('editScheduleBtn');
-        const cancelScheduleBtn = document.getElementById('cancelScheduleBtn');
 
         // Auto-resize textarea
         messageInput.addEventListener('input', function() {
@@ -653,13 +613,7 @@
         });
 
         function handleSendClick() {
-            if (isEditingSchedule) {
-                // Save edited scheduled message
-                saveScheduledEdit();
-            } else if (!isScheduled) {
-                // Normal send
-                sendMessage();
-            }
+            sendMessage();
         }
 
         function sendMessage() {
@@ -705,6 +659,41 @@
             messagesContainer.scrollTop = messagesContainer.scrollHeight;
         }
 
+        function addScheduledMessage(content) {
+            // Show chat state if hidden
+            welcomeState.classList.add('hidden');
+            chatState.classList.remove('hidden');
+
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message user scheduled';
+
+            const avatar = document.createElement('div');
+            avatar.className = 'message-avatar';
+            avatar.textContent = '👤';
+
+            const messageContent = document.createElement('div');
+            messageContent.className = 'message-content';
+            messageContent.textContent = content;
+
+            // Create scheduled badge
+            const scheduledBadge = document.createElement('div');
+            scheduledBadge.className = 'scheduled-badge';
+            scheduledBadge.innerHTML = `
+                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <circle cx="8" cy="8" r="6"/>
+                    <path d="M8 5v3l2 1"/>
+                </svg>
+                Scheduled
+            `;
+
+            messageContent.appendChild(scheduledBadge);
+            messageDiv.appendChild(avatar);
+            messageDiv.appendChild(messageContent);
+            messagesContainer.appendChild(messageDiv);
+
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
         // Modal interactions
         keepWorkingBtn.addEventListener('click', () => {
             modalOverlay.classList.add('active');
@@ -722,102 +711,17 @@
 
         // Schedule option
         scheduleOption.addEventListener('click', () => {
-            const message = "Can you help me create a comprehensive analysis of this topic?";
-            scheduledMessage = message;
-            currentMessage = message;
-            isScheduled = true;
-
-            // Hide modal
+            const message = messageInput.value.trim() || "Can you help me create a comprehensive analysis of this topic?";
+            
+            // Add scheduled message to chat
+            addScheduledMessage(message);
+            
+            // Clear input and hide modal
+            messageInput.value = '';
+            messageInput.style.height = 'auto';
             modalOverlay.classList.remove('active');
-
-            // Show scheduled state
-            showScheduledState();
-        });
-
-        function showScheduledState() {
-            // Update input to read-only
-            messageInput.value = scheduledMessage;
-            messageInput.classList.add('scheduled-readonly');
-            messageInput.disabled = true;
-
-            // Update send button to clock icon
-            sendButton.style.background = '#E0DDD8';
-            sendButton.disabled = true;
-            sendIcon.innerHTML = '<text x="8" y="12" font-size="14" text-anchor="middle">⏰</text>';
-
-            // Show schedule status
-            scheduleStatus.classList.add('active');
-            scheduleText.textContent = 'Scheduled for 9:00 PM (in 2h 15m)';
-            scheduleIcon.textContent = '⏰';
-        }
-
-        // Edit scheduled message
-        editScheduleBtn.addEventListener('click', () => {
-            isEditingSchedule = true;
-
-            // Make input editable
-            messageInput.classList.remove('scheduled-readonly');
-            messageInput.classList.add('scheduled-editing');
-            messageInput.disabled = false;
-            messageInput.focus();
-
-            // Change send button to checkmark
-            sendButton.style.background = '#D97757';
-            sendButton.disabled = false;
-            sendIcon.innerHTML = '<path d="M3 8l4 4 8-8" stroke="white" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>';
-
-            // Update status bar
-            scheduleText.textContent = 'Editing';
-            scheduleIcon.textContent = '✏️';
-            editScheduleBtn.textContent = 'Save';
-        });
-
-        function saveScheduledEdit() {
-            const newMessage = messageInput.value.trim();
-            if (!newMessage) return;
-
-            scheduledMessage = newMessage;
-            currentMessage = newMessage;
-            isEditingSchedule = false;
-
-            // Back to scheduled state
-            messageInput.classList.remove('scheduled-editing');
-            messageInput.classList.add('scheduled-readonly');
-            messageInput.disabled = true;
-
-            // Reset send button
-            sendButton.style.background = '#E0DDD8';
-            sendButton.disabled = true;
-            sendIcon.innerHTML = '<text x="8" y="12" font-size="14" text-anchor="middle">⏰</text>';
-
-            // Update status bar
-            scheduleText.textContent = 'Scheduled for 9:00 PM (in 2h 15m)';
-            scheduleIcon.textContent = '⏰';
-            editScheduleBtn.textContent = 'Edit';
-        }
-
-        // Cancel scheduled message
-        cancelScheduleBtn.addEventListener('click', () => {
-            if (confirm('Are you sure you want to cancel this scheduled message?')) {
-                isScheduled = false;
-                isEditingSchedule = false;
-                scheduledMessage = '';
-                currentMessage = '';
-
-                // Reset input
-                messageInput.value = '';
-                messageInput.classList.remove('scheduled-readonly', 'scheduled-editing');
-                messageInput.disabled = false;
-                messageInput.placeholder = 'Type / for commands';
-
-                // Reset send button
-                sendButton.style.background = '#D97757';
-                sendButton.disabled = false;
-                sendIcon.innerHTML = '<path d="M8 2L8 14M8 2L3 7M8 2L13 7" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>';
-
-                // Hide schedule status
-                scheduleStatus.classList.remove('active');
-            }
+            
+            // Keep input in normal state (not disabled)
         });
     </script>
 </body>
