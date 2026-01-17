@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude - Scheduled Send Interactive Prototype</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+            background: #FAF9F6;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* App Container */
+        .app-container {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* Main Chat Area */
+        .chat-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #FAF9F6;
+        }
+
+        /* Welcome State */
+        .welcome-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            padding: 40px;
+        }
+
+        .welcome-icon {
+            font-size: 48px;
+            margin-bottom: 24px;
+        }
+
+        .welcome-title {
+            font-size: 36px;
+            font-weight: 400;
+            color: #1F1F1F;
+            margin-bottom: 16px;
+            letter-spacing: -0.5px;
+        }
+
+        .welcome-subtitle {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 40px;
+        }
+
+        /* Chat Container */
+        .chat-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            max-width: 820px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 80px 20px 0;
+        }
+
+        .messages-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0 20px 20px;
+        }
+
+        /* Message Styles */
+        .message {
+            margin-bottom: 32px;
+            display: flex;
+            gap: 16px;
+        }
+
+        .message.user {
+            flex-direction: row-reverse;
+        }
+
+        .message-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        .message.assistant .message-avatar {
+            background: #D97757;
+            color: white;
+        }
+
+        .message.user .message-avatar {
+            background: #E8E5E1;
+        }
+
+        .message-content {
+            flex: 1;
+            font-size: 15px;
+            line-height: 1.6;
+            color: #1F1F1F;
+        }
+
+        /* Input Area */
+        .input-container {
+            padding: 20px;
+            background: #FAF9F6;
+        }
+
+        .input-wrapper {
+            max-width: 820px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .usage-banner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #F5EDE4;
+            border-radius: 12px;
+            padding: 12px 16px;
+            margin-bottom: 12px;
+            font-size: 13px;
+            color: #5C4A3A;
+        }
+
+        .usage-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .usage-dot {
+            width: 6px;
+            height: 6px;
+            background: #D97757;
+            border-radius: 50%;
+        }
+
+        .keep-working-btn {
+            background: transparent;
+            border: none;
+            color: #1F1F1F;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: underline;
+            padding: 0;
+        }
+
+        .keep-working-btn:hover {
+            opacity: 0.7;
+        }
+
+        .input-box {
+            background: white;
+            border: 1px solid #D4D1CC;
+            border-radius: 16px;
+            padding: 16px 16px 50px 16px;
+            font-size: 15px;
+            font-family: inherit;
+            width: 100%;
+            min-height: 100px;
+            resize: none;
+            color: #1F1F1F;
+            transition: border-color 0.15s;
+            line-height: 1.5;
+        }
+
+        .input-box:focus {
+            outline: none;
+            border-color: #C0BCB7;
+        }
+
+        .input-box::placeholder {
+            color: #999;
+        }
+
+        .input-box.scheduled-readonly {
+            color: #999;
+            cursor: default;
+            background: #FAFAF9;
+        }
+
+        .input-box.scheduled-editing {
+            border-color: #D97757;
+        }
+
+        .input-actions {
+            position: absolute;
+            right: 12px;
+            bottom: 12px;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .bottom-toolbar {
+            position: absolute;
+            left: 12px;
+            bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .model-selector {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 10px;
+            background: #F5F5F5;
+            border-radius: 6px;
+            font-size: 13px;
+            color: #1F1F1F;
+            cursor: pointer;
+            border: none;
+        }
+
+        .send-button {
+            width: 32px;
+            height: 32px;
+            background: #D97757;
+            border: none;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background 0.2s;
+            font-size: 16px;
+            color: white;
+        }
+
+        .send-button:hover:not(:disabled) {
+            background: #C66846;
+        }
+
+        .send-button:disabled {
+            background: #E0DDD8;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        /* Schedule Status Bar */
+        .schedule-status {
+            display: none;
+            align-items: center;
+            padding: 8px 16px;
+            margin-top: 8px;
+            font-size: 13px;
+            color: #666;
+            gap: 12px;
+        }
+
+        .schedule-status.active {
+            display: flex;
+        }
+
+        .schedule-info {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .schedule-icon {
+            font-size: 14px;
+        }
+
+        .schedule-actions {
+            display: flex;
+            gap: 12px;
+            margin-left: auto;
+        }
+
+        .schedule-action-link {
+            color: #1F1F1F;
+            text-decoration: none;
+            font-weight: 500;
+            cursor: pointer;
+            border-bottom: 1px solid transparent;
+            transition: border-color 0.2s;
+        }
+
+        .schedule-action-link:hover {
+            border-bottom-color: #1F1F1F;
+        }
+
+        /* Modal Overlay */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            animation: fadeIn 0.2s ease;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Modal Content */
+        .modal {
+            background: white;
+            border-radius: 16px;
+            padding: 0;
+            max-width: 560px;
+            width: 100%;
+            margin: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.3s ease;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            padding: 32px 32px 24px;
+            border-bottom: 1px solid #F0EDE8;
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 24px;
+            right: 24px;
+            width: 32px;
+            height: 32px;
+            background: #F5F5F5;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: #666;
+            transition: background 0.2s;
+        }
+
+        .modal-close:hover {
+            background: #E8E5E1;
+        }
+
+        .modal-title {
+            font-size: 24px;
+            font-weight: 400;
+            color: #1F1F1F;
+            margin-bottom: 8px;
+            letter-spacing: -0.3px;
+        }
+
+        .modal-description {
+            font-size: 15px;
+            line-height: 1.6;
+            color: #666;
+        }
+
+        .modal-body {
+            padding: 24px 32px 32px;
+        }
+
+        .reset-info {
+            background: #F5EDE4;
+            border-radius: 10px;
+            padding: 14px 16px;
+            font-size: 14px;
+            color: #5C4A3A;
+            margin-bottom: 24px;
+        }
+
+        .reset-time {
+            font-weight: 500;
+            color: #1F1F1F;
+        }
+
+        /* Option Cards */
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option-card {
+            background: white;
+            border: 1.5px solid #E0DDD8;
+            border-radius: 12px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            gap: 16px;
+            align-items: flex-start;
+        }
+
+        .option-card:hover {
+            border-color: #D97757;
+            background: #FFFCF9;
+        }
+
+        .option-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .option-content {
+            flex: 1;
+        }
+
+        .option-title {
+            font-size: 16px;
+            font-weight: 500;
+            color: #1F1F1F;
+            margin-bottom: 6px;
+        }
+
+        .option-description {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.5;
+        }
+
+        /* Hidden State */
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Main Chat Area -->
+        <div class="chat-area">
+            <!-- Welcome State (shown initially) -->
+            <div class="welcome-container" id="welcomeState">
+                <div class="welcome-icon">✨</div>
+                <h1 class="welcome-title">Wen returns!</h1>
+                <p class="welcome-subtitle">Type / for commands</p>
+            </div>
+
+            <!-- Chat State (hidden initially) -->
+            <div class="chat-container hidden" id="chatState">
+                <div class="messages-container" id="messagesContainer">
+                    <!-- Messages will be added here -->
+                </div>
+            </div>
+
+            <!-- Input Area -->
+            <div class="input-container">
+                <div class="input-wrapper">
+                    <!-- Usage Banner -->
+                    <div class="usage-banner" id="usageBanner">
+                        <div class="usage-info">
+                            <span class="usage-dot"></span>
+                            <span>Usage limit reached • Resets 9:00 PM • limits shared with Claude Code</span>
+                        </div>
+                        <button class="keep-working-btn" id="keepWorkingBtn">Keep working</button>
+                    </div>
+
+                    <!-- Input Box -->
+                    <div style="position: relative;">
+                        <textarea
+                            class="input-box"
+                            id="messageInput"
+                            placeholder="Type / for commands"
+                            rows="1"
+                        ></textarea>
+
+                        <!-- Bottom Toolbar (Left side) -->
+                        <div class="bottom-toolbar">
+                            <button class="model-selector" id="attachButton" style="padding: 8px; background: transparent;">
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                    <path d="M8 3V13M3 8H13" stroke="#666" stroke-width="2" stroke-linecap="round"/>
+                                </svg>
+                            </button>
+                            <button class="model-selector" id="historyButton" style="padding: 8px; background: transparent;">
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                    <circle cx="8" cy="8" r="6" stroke="#666" stroke-width="1.5" fill="none"/>
+                                    <path d="M8 5V8L10 10" stroke="#666" stroke-width="1.5" stroke-linecap="round"/>
+                                </svg>
+                            </button>
+                        </div>
+
+                        <!-- Input Actions (Right side) -->
+                        <div class="input-actions">
+                            <button class="model-selector">
+                                Opus 4.5
+                                <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                                    <path d="M3 4.5L6 7.5L9 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </button>
+                            <button class="send-button" id="sendButton">
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="white" id="sendIcon">
+                                    <path d="M8 2L8 14M8 2L3 7M8 2L13 7" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Schedule Status Bar -->
+                    <div class="schedule-status" id="scheduleStatus">
+                        <div class="schedule-info">
+                            <span class="schedule-icon" id="scheduleIcon">⏰</span>
+                            <span id="scheduleText">Scheduled for 9:00 PM (in 2h 15m)</span>
+                        </div>
+                        <div class="schedule-actions">
+                            <a class="schedule-action-link" id="editScheduleBtn">Edit</a>
+                            <a class="schedule-action-link" id="cancelScheduleBtn">Cancel</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal">
+            <div class="modal-header">
+                <button class="modal-close" id="modalClose">✕</button>
+                <h2 class="modal-title">Keep using Claude?</h2>
+                <p class="modal-description">You've reached your plan's message limit. You can wait until it resets at Jan 13, 9:00 PM GMT+8, or continue now:</p>
+            </div>
+            <div class="modal-body">
+                <div class="reset-info">
+                    Your limit resets in <span class="reset-time">2 hours and 15 minutes</span>
+                </div>
+
+                <div class="options">
+                    <div class="option-card" id="payPerUseOption">
+                        <div class="option-icon" style="background: white; border: 1.5px solid #E0DDD8;">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1F1F1F" stroke-width="1.5">
+                                <path d="M13 2L3 14h8l-1 8 10-12h-8l1-8z"/>
+                            </svg>
+                        </div>
+                        <div class="option-content">
+                            <div class="option-title">Pay per message</div>
+                            <div class="option-description">Get extra usage to finish what you're working on.</div>
+                        </div>
+                    </div>
+
+                    <div class="option-card" id="upgradeOption">
+                        <div class="option-icon" style="background: white; border: 1.5px solid #E0DDD8;">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1F1F1F" stroke-width="1.5">
+                                <path d="M3 13h4l3-9 4 18 3-9h4"/>
+                            </svg>
+                        </div>
+                        <div class="option-content">
+                            <div class="option-title">Upgrade to a higher plan</div>
+                            <div class="option-description">Get higher limits and do more with Claude.</div>
+                        </div>
+                    </div>
+
+                    <div class="option-card" id="scheduleOption">
+                        <div class="option-icon" style="background: #FFFCF9; border: 1.5px solid #E8CFBB;">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#D97757" stroke-width="1.5">
+                                <circle cx="12" cy="12" r="10"/>
+                                <path d="M12 6v6l4 2"/>
+                            </svg>
+                        </div>
+                        <div class="option-content">
+                            <div class="option-title">Schedule for later</div>
+                            <div class="option-description">Queue your message to send automatically when your limit resets. You'll get a notification when Claude responds.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // State management
+        let currentMessage = '';
+        let scheduledMessage = '';
+        let isScheduled = false;
+        let isEditingSchedule = false;
+
+        // Elements
+        const welcomeState = document.getElementById('welcomeState');
+        const chatState = document.getElementById('chatState');
+        const messagesContainer = document.getElementById('messagesContainer');
+        const messageInput = document.getElementById('messageInput');
+        const sendButton = document.getElementById('sendButton');
+        const sendIcon = document.getElementById('sendIcon');
+        const keepWorkingBtn = document.getElementById('keepWorkingBtn');
+        const modalOverlay = document.getElementById('modalOverlay');
+        const modalClose = document.getElementById('modalClose');
+        const scheduleOption = document.getElementById('scheduleOption');
+        const scheduleStatus = document.getElementById('scheduleStatus');
+        const scheduleText = document.getElementById('scheduleText');
+        const scheduleIcon = document.getElementById('scheduleIcon');
+        const editScheduleBtn = document.getElementById('editScheduleBtn');
+        const cancelScheduleBtn = document.getElementById('cancelScheduleBtn');
+
+        // Auto-resize textarea
+        messageInput.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = this.scrollHeight + 'px';
+        });
+
+        // Send message
+        sendButton.addEventListener('click', handleSendClick);
+        messageInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                handleSendClick();
+            }
+        });
+
+        function handleSendClick() {
+            if (isEditingSchedule) {
+                // Save edited scheduled message
+                saveScheduledEdit();
+            } else if (!isScheduled) {
+                // Normal send
+                sendMessage();
+            }
+        }
+
+        function sendMessage() {
+            const message = messageInput.value.trim();
+            if (!message) return;
+
+            // Show chat state
+            welcomeState.classList.add('hidden');
+            chatState.classList.remove('hidden');
+
+            // Add user message
+            addMessage('user', message);
+            messageInput.value = '';
+            messageInput.style.height = 'auto';
+
+            // Simulate assistant response
+            setTimeout(() => {
+                addMessage('assistant', "I'd be happy to help you with that. Let me provide a detailed analysis...");
+
+                // Show modal after second message
+                setTimeout(() => {
+                    modalOverlay.classList.add('active');
+                }, 1000);
+            }, 500);
+        }
+
+        function addMessage(type, content) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}`;
+
+            const avatar = document.createElement('div');
+            avatar.className = 'message-avatar';
+            avatar.textContent = type === 'user' ? '👤' : '🤖';
+
+            const messageContent = document.createElement('div');
+            messageContent.className = 'message-content';
+            messageContent.textContent = content;
+
+            messageDiv.appendChild(avatar);
+            messageDiv.appendChild(messageContent);
+            messagesContainer.appendChild(messageDiv);
+
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        // Modal interactions
+        keepWorkingBtn.addEventListener('click', () => {
+            modalOverlay.classList.add('active');
+        });
+
+        modalClose.addEventListener('click', () => {
+            modalOverlay.classList.remove('active');
+        });
+
+        modalOverlay.addEventListener('click', (e) => {
+            if (e.target === modalOverlay) {
+                modalOverlay.classList.remove('active');
+            }
+        });
+
+        // Schedule option
+        scheduleOption.addEventListener('click', () => {
+            const message = "Can you help me create a comprehensive analysis of this topic?";
+            scheduledMessage = message;
+            currentMessage = message;
+            isScheduled = true;
+
+            // Hide modal
+            modalOverlay.classList.remove('active');
+
+            // Show scheduled state
+            showScheduledState();
+        });
+
+        function showScheduledState() {
+            // Update input to read-only
+            messageInput.value = scheduledMessage;
+            messageInput.classList.add('scheduled-readonly');
+            messageInput.disabled = true;
+
+            // Update send button to clock icon
+            sendButton.style.background = '#E0DDD8';
+            sendButton.disabled = true;
+            sendIcon.innerHTML = '<text x="8" y="12" font-size="14" text-anchor="middle">⏰</text>';
+
+            // Show schedule status
+            scheduleStatus.classList.add('active');
+            scheduleText.textContent = 'Scheduled for 9:00 PM (in 2h 15m)';
+            scheduleIcon.textContent = '⏰';
+        }
+
+        // Edit scheduled message
+        editScheduleBtn.addEventListener('click', () => {
+            isEditingSchedule = true;
+
+            // Make input editable
+            messageInput.classList.remove('scheduled-readonly');
+            messageInput.classList.add('scheduled-editing');
+            messageInput.disabled = false;
+            messageInput.focus();
+
+            // Change send button to checkmark
+            sendButton.style.background = '#D97757';
+            sendButton.disabled = false;
+            sendIcon.innerHTML = '<path d="M3 8l4 4 8-8" stroke="white" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>';
+
+            // Update status bar
+            scheduleText.textContent = 'Editing';
+            scheduleIcon.textContent = '✏️';
+            editScheduleBtn.textContent = 'Save';
+        });
+
+        function saveScheduledEdit() {
+            const newMessage = messageInput.value.trim();
+            if (!newMessage) return;
+
+            scheduledMessage = newMessage;
+            currentMessage = newMessage;
+            isEditingSchedule = false;
+
+            // Back to scheduled state
+            messageInput.classList.remove('scheduled-editing');
+            messageInput.classList.add('scheduled-readonly');
+            messageInput.disabled = true;
+
+            // Reset send button
+            sendButton.style.background = '#E0DDD8';
+            sendButton.disabled = true;
+            sendIcon.innerHTML = '<text x="8" y="12" font-size="14" text-anchor="middle">⏰</text>';
+
+            // Update status bar
+            scheduleText.textContent = 'Scheduled for 9:00 PM (in 2h 15m)';
+            scheduleIcon.textContent = '⏰';
+            editScheduleBtn.textContent = 'Edit';
+        }
+
+        // Cancel scheduled message
+        cancelScheduleBtn.addEventListener('click', () => {
+            if (confirm('Are you sure you want to cancel this scheduled message?')) {
+                isScheduled = false;
+                isEditingSchedule = false;
+                scheduledMessage = '';
+                currentMessage = '';
+
+                // Reset input
+                messageInput.value = '';
+                messageInput.classList.remove('scheduled-readonly', 'scheduled-editing');
+                messageInput.disabled = false;
+                messageInput.placeholder = 'Type / for commands';
+
+                // Reset send button
+                sendButton.style.background = '#D97757';
+                sendButton.disabled = false;
+                sendIcon.innerHTML = '<path d="M8 2L8 14M8 2L3 7M8 2L13 7" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>';
+
+                // Hide schedule status
+                scheduleStatus.classList.remove('active');
+            }
+        });
+    </script>
+</body>
+</html>
