@@ -1,0 +1,20 @@
+# Legacy prototype files (exploration designs)
+01-limit-modal.html
+02-scheduled-message-card.html
+03-edit-state.html
+04-notification.html
+05-complete-flow.html
+
+# Reference screenshots (local only)
+screens_claude/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
