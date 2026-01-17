@@ -284,6 +284,204 @@
             height: 12px;
         }
 
+        /* Message Actions (hover) */
+        .message-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 4px;
+            margin-top: 8px;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .message.scheduled:hover .message-actions {
+            opacity: 1;
+        }
+
+        .message-action-btn {
+            width: 28px;
+            height: 28px;
+            background: white;
+            border: 1px solid #E0DDD8;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: #666;
+            font-size: 14px;
+            transition: all 0.15s ease;
+        }
+
+        .message-action-btn:hover {
+            background: #F5F5F5;
+            border-color: #C0BCB7;
+            color: #1F1F1F;
+        }
+
+        .message-action-btn svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        /* Edit State */
+        .message.scheduled.editing .message-content {
+            border: 2px solid #3B82F6;
+            border-left: 3px solid #3B82F6;
+            padding-bottom: 12px;
+        }
+
+        .message.scheduled.editing .scheduled-badge,
+        .message.scheduled.editing .message-text {
+            display: none;
+        }
+
+        .edit-container {
+            display: none;
+        }
+
+        .message.scheduled.editing .edit-container {
+            display: block;
+        }
+
+        .edit-textarea {
+            width: 100%;
+            min-height: 80px;
+            padding: 12px;
+            border: 1px solid #E0DDD8;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 15px;
+            line-height: 1.6;
+            color: #1F1F1F;
+            resize: vertical;
+            margin-bottom: 12px;
+        }
+
+        .edit-textarea:focus {
+            outline: none;
+            border-color: #3B82F6;
+        }
+
+        .edit-info {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            color: #3B82F6;
+            margin-bottom: 12px;
+        }
+
+        .edit-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+        }
+
+        .edit-btn {
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .edit-btn.cancel {
+            background: white;
+            border: 1px solid #E0DDD8;
+            color: #666;
+        }
+
+        .edit-btn.cancel:hover {
+            background: #F5F5F5;
+            border-color: #C0BCB7;
+        }
+
+        .edit-btn.save {
+            background: #3B82F6;
+            border: none;
+            color: white;
+        }
+
+        .edit-btn.save:hover {
+            background: #2563EB;
+        }
+
+        /* Copy Feedback */
+        .copy-feedback {
+            position: absolute;
+            top: -30px;
+            right: 0;
+            background: #1F1F1F;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+            pointer-events: none;
+        }
+
+        .copy-feedback.show {
+            opacity: 1;
+        }
+
+        /* Confirmation Modal */
+        .confirm-modal {
+            max-width: 400px;
+        }
+
+        .confirm-modal .modal-header {
+            padding: 24px 24px 16px;
+            border-bottom: none;
+        }
+
+        .confirm-modal .modal-title {
+            font-size: 18px;
+            margin-bottom: 8px;
+        }
+
+        .confirm-modal .modal-body {
+            padding: 0 24px 24px;
+        }
+
+        .confirm-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .confirm-btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .confirm-btn.secondary {
+            background: white;
+            border: 1px solid #E0DDD8;
+            color: #1F1F1F;
+        }
+
+        .confirm-btn.secondary:hover {
+            background: #F5F5F5;
+        }
+
+        .confirm-btn.danger {
+            background: #DC2626;
+            border: none;
+            color: white;
+        }
+
+        .confirm-btn.danger:hover {
+            background: #B91C1C;
+        }
+
         /* Modal Overlay */
         .modal-overlay {
             position: fixed;
@@ -581,6 +779,23 @@
         </div>
     </div>
 
+    <!-- Cancel Confirmation Modal -->
+    <div class="modal-overlay" id="confirmModalOverlay">
+        <div class="modal confirm-modal">
+            <div class="modal-header">
+                <button class="modal-close" id="confirmModalClose">✕</button>
+                <h2 class="modal-title">Cancel scheduled message?</h2>
+                <p class="modal-description">This message will not be sent.</p>
+            </div>
+            <div class="modal-body">
+                <div class="confirm-actions">
+                    <button class="confirm-btn secondary" id="keepScheduledBtn">Keep scheduled</button>
+                    <button class="confirm-btn danger" id="confirmCancelBtn">Cancel message</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         // State management
         let currentMessage = '';
@@ -596,6 +811,10 @@
         const modalOverlay = document.getElementById('modalOverlay');
         const modalClose = document.getElementById('modalClose');
         const scheduleOption = document.getElementById('scheduleOption');
+        const confirmModalOverlay = document.getElementById('confirmModalOverlay');
+        const confirmModalClose = document.getElementById('confirmModalClose');
+        const keepScheduledBtn = document.getElementById('keepScheduledBtn');
+        const confirmCancelBtn = document.getElementById('confirmCancelBtn');
 
         // Auto-resize textarea
         messageInput.addEventListener('input', function() {
@@ -659,6 +878,10 @@
             messagesContainer.scrollTop = messagesContainer.scrollHeight;
         }
 
+        // Track current scheduled message element
+        let currentScheduledMessage = null;
+        let originalScheduledContent = '';
+
         function addScheduledMessage(content) {
             // Show chat state if hidden
             welcomeState.classList.add('hidden');
@@ -671,9 +894,16 @@
             avatar.className = 'message-avatar';
             avatar.textContent = '👤';
 
+            const contentWrapper = document.createElement('div');
+            contentWrapper.style.cssText = 'flex: 1; display: flex; flex-direction: column; align-items: flex-end;';
+
             const messageContent = document.createElement('div');
             messageContent.className = 'message-content';
-            messageContent.textContent = content;
+
+            // Message text span (for easy access)
+            const messageText = document.createElement('span');
+            messageText.className = 'message-text';
+            messageText.textContent = content;
 
             // Create scheduled badge
             const scheduledBadge = document.createElement('div');
@@ -686,12 +916,140 @@
                 Scheduled
             `;
 
+            // Create edit container (hidden by default)
+            const editContainer = document.createElement('div');
+            editContainer.className = 'edit-container';
+            editContainer.innerHTML = `
+                <textarea class="edit-textarea">${content}</textarea>
+                <div class="edit-info">
+                    <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
+                        <circle cx="8" cy="8" r="7" fill="none" stroke="currentColor" stroke-width="1.5"/>
+                        <text x="8" y="12" text-anchor="middle" font-size="10" fill="currentColor">i</text>
+                    </svg>
+                    This scheduled message will be updated.
+                </div>
+                <div class="edit-actions">
+                    <button class="edit-btn cancel">Cancel</button>
+                    <button class="edit-btn save">Save</button>
+                </div>
+            `;
+
+            // Create action buttons
+            const messageActions = document.createElement('div');
+            messageActions.className = 'message-actions';
+            messageActions.style.position = 'relative';
+            messageActions.innerHTML = `
+                <div class="copy-feedback">Copied!</div>
+                <button class="message-action-btn edit-action" title="Edit">
+                    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M11.5 2.5l2 2-8 8H3.5v-2l8-8z"/>
+                    </svg>
+                </button>
+                <button class="message-action-btn cancel-action" title="Cancel">
+                    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M4 4l8 8M12 4l-8 8"/>
+                    </svg>
+                </button>
+                <button class="message-action-btn copy-action" title="Copy">
+                    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <rect x="5" y="5" width="8" height="8" rx="1"/>
+                        <path d="M3 11V3h8"/>
+                    </svg>
+                </button>
+            `;
+
+            messageContent.appendChild(messageText);
             messageContent.appendChild(scheduledBadge);
+            messageContent.appendChild(editContainer);
+            contentWrapper.appendChild(messageContent);
+            contentWrapper.appendChild(messageActions);
             messageDiv.appendChild(avatar);
-            messageDiv.appendChild(messageContent);
+            messageDiv.appendChild(contentWrapper);
             messagesContainer.appendChild(messageDiv);
 
+            // Store reference
+            currentScheduledMessage = messageDiv;
+            originalScheduledContent = content;
+
+            // Add event listeners for actions
+            const editBtn = messageActions.querySelector('.edit-action');
+            const cancelBtn = messageActions.querySelector('.cancel-action');
+            const copyBtn = messageActions.querySelector('.copy-action');
+            const editCancelBtn = editContainer.querySelector('.edit-btn.cancel');
+            const editSaveBtn = editContainer.querySelector('.edit-btn.save');
+
+            editBtn.addEventListener('click', () => editScheduledMessage(messageDiv));
+            cancelBtn.addEventListener('click', () => showCancelConfirmation(messageDiv));
+            copyBtn.addEventListener('click', () => copyScheduledMessage(messageDiv, messageActions));
+            editCancelBtn.addEventListener('click', () => cancelScheduledEdit(messageDiv));
+            editSaveBtn.addEventListener('click', () => saveScheduledEdit(messageDiv));
+
             messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        function editScheduledMessage(messageDiv) {
+            // Store original content
+            const messageText = messageDiv.querySelector('.message-text');
+            originalScheduledContent = messageText.textContent;
+
+            // Update textarea with current content
+            const textarea = messageDiv.querySelector('.edit-textarea');
+            textarea.value = originalScheduledContent;
+
+            // Enter edit mode
+            messageDiv.classList.add('editing');
+            textarea.focus();
+        }
+
+        function saveScheduledEdit(messageDiv) {
+            const textarea = messageDiv.querySelector('.edit-textarea');
+            const messageText = messageDiv.querySelector('.message-text');
+            const newContent = textarea.value.trim();
+
+            if (newContent) {
+                messageText.textContent = newContent;
+                originalScheduledContent = newContent;
+            }
+
+            // Exit edit mode
+            messageDiv.classList.remove('editing');
+        }
+
+        function cancelScheduledEdit(messageDiv) {
+            // Restore original content
+            const textarea = messageDiv.querySelector('.edit-textarea');
+            textarea.value = originalScheduledContent;
+
+            // Exit edit mode
+            messageDiv.classList.remove('editing');
+        }
+
+        function showCancelConfirmation(messageDiv) {
+            currentScheduledMessage = messageDiv;
+            confirmModalOverlay.classList.add('active');
+        }
+
+        function cancelScheduledMessage() {
+            if (currentScheduledMessage) {
+                currentScheduledMessage.remove();
+                currentScheduledMessage = null;
+                originalScheduledContent = '';
+            }
+            confirmModalOverlay.classList.remove('active');
+        }
+
+        function copyScheduledMessage(messageDiv, actionsContainer) {
+            const messageText = messageDiv.querySelector('.message-text');
+            const text = messageText.textContent;
+
+            navigator.clipboard.writeText(text).then(() => {
+                // Show feedback
+                const feedback = actionsContainer.querySelector('.copy-feedback');
+                feedback.classList.add('show');
+                setTimeout(() => {
+                    feedback.classList.remove('show');
+                }, 1500);
+            });
         }
 
         // Modal interactions
@@ -706,6 +1064,25 @@
         modalOverlay.addEventListener('click', (e) => {
             if (e.target === modalOverlay) {
                 modalOverlay.classList.remove('active');
+            }
+        });
+
+        // Confirmation modal interactions
+        confirmModalClose.addEventListener('click', () => {
+            confirmModalOverlay.classList.remove('active');
+        });
+
+        keepScheduledBtn.addEventListener('click', () => {
+            confirmModalOverlay.classList.remove('active');
+        });
+
+        confirmCancelBtn.addEventListener('click', () => {
+            cancelScheduledMessage();
+        });
+
+        confirmModalOverlay.addEventListener('click', (e) => {
+            if (e.target === confirmModalOverlay) {
+                confirmModalOverlay.classList.remove('active');
             }
         });
 
