@@ -13,9 +13,13 @@ Instead of losing their train of thought, users could:
 
 For the full product rationale, see the **[Product Brief](PRODUCT_BRIEF.md)**.
 
+## Live Demo
+
+**[https://claude-scheduled-send.vercel.app/](https://claude-scheduled-send.vercel.app/)**
+
 ## Try It Out
 
-1. Open `index.html` in your browser
+1. Visit the live demo above, or open `index.html` locally
 2. Type a message and hit send
 3. The "usage limit" modal appears with options:
    - Pay per message
