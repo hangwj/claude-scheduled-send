@@ -123,38 +123,6 @@ When selected:
 
 ---
 
-## Technical Considerations
-
-### Edge Cases
-
-| Scenario | Handling |
-|----------|----------|
-| Conversation deleted while queued | Cancel send, discard message |
-| User upgrades while queued | Send immediately |
-| Network failure on send | Retry with backoff; notify if persistent |
-| Limit resets early | Send immediately |
-| User logs out while queued | Message persists (server-side) |
-| Multiple devices | Scheduled message visible across all |
-
----
-
-## Open Questions (v2)
-
-- Multiple queues across conversations?
-- Attachment support?
-- Proactive scheduling before limit hit?
-
----
-
-## Prototype Screens
-
-1. Limit modal with "Schedule for later" option
-2. Scheduled message in chat with badge
-3. Hover state with edit/cancel actions
-4. Edit state (inline, matches existing edit pattern)
-
----
-
 ## Questions & Answers
 
 **Q: Why not just let users queue unlimited messages?**
@@ -178,12 +146,14 @@ A: Show user's local time. Format: "9:00 PM" or with timezone "9:00 PM GMT+8".
 **Q: Does scheduled message lock the model selection?**
 A: TBD - either lock at schedule time or use current default when sent.
 
+## Disclaimer
+
+This is an independent project, not affiliated with or endorsed by Anthropic. The prototype and product brief were created as a design exploration—an exercise in imagining how a "scheduled send" feature might work and what product considerations would shape its design. No insider knowledge, just curiosity about a problem worth solving.
+
 ---
 
 *v1.0 | January 2025*
 
 ---
 
-## Disclaimer
 
-This is an independent project, not affiliated with or endorsed by Anthropic. The prototype and product brief were created as a design exploration—an exercise in imagining how a "scheduled send" feature might work and what product considerations would shape its design. No insider knowledge, just curiosity about a problem worth solving.
