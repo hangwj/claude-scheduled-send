@@ -252,17 +252,16 @@
             background: #E8E1D9;
             padding: 12px 16px;
             border-radius: 18px;
-            position: relative;
-            padding-bottom: 32px;
             max-width: 483px;
             word-wrap: break-word;
             overflow-wrap: break-word;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 12px;
         }
 
         .scheduled-badge {
-            position: absolute;
-            bottom: 8px;
-            right: 8px;
             display: flex;
             align-items: center;
             gap: 4px;
@@ -321,8 +320,10 @@
         /* Edit State */
         .message.scheduled.editing .message-content {
             border: 2px solid #C0BCB7;
-            padding-bottom: 12px;
+            padding: 12px 16px;
             width: 483px;
+            display: block;
+            gap: unset;
         }
 
         .message.scheduled.editing .scheduled-badge,
