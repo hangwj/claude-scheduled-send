@@ -1021,6 +1021,14 @@
                 originalScheduledContent = '';
             }
             confirmModalOverlay.classList.remove('active');
+            checkEmptyState();
+        }
+
+        function checkEmptyState() {
+            if (messagesContainer.children.length === 0) {
+                welcomeState.classList.remove('hidden');
+                chatState.classList.add('hidden');
+            }
         }
 
         function copyScheduledMessage(messageDiv, actionsContainer) {
