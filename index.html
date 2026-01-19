@@ -795,6 +795,7 @@
     <script>
         // State management
         let currentMessage = '';
+        let pendingMessage = '';
 
         // Elements
         const welcomeState = document.getElementById('welcomeState');
@@ -835,23 +836,32 @@
             const message = messageInput.value.trim();
             if (!message) return;
 
+            // Store the message before clearing
+            pendingMessage = message;
+
             // Show chat state
             welcomeState.classList.add('hidden');
             chatState.classList.remove('hidden');
 
+            // Don't add user message yet - wait for modal choice
+            // Show modal immediately
+            modalOverlay.classList.add('active');
+        }
+
+        function sendAsNormalMessage() {
+            if (!pendingMessage) return;
+
             // Add user message
-            addMessage('user', message);
+            addMessage('user', pendingMessage);
+            
+            // Clear pending and input
+            pendingMessage = '';
             messageInput.value = '';
             messageInput.style.height = 'auto';
 
             // Simulate assistant response
             setTimeout(() => {
                 addMessage('assistant', "I'd be happy to help you with that. Let me provide a detailed analysis...");
-
-                // Show modal after second message
-                setTimeout(() => {
-                    modalOverlay.classList.add('active');
-                }, 1000);
             }, 500);
         }
 
@@ -1053,11 +1063,15 @@
 
         modalClose.addEventListener('click', () => {
             modalOverlay.classList.remove('active');
+            // Keep message in input so user doesn't lose it
+            pendingMessage = '';
         });
 
         modalOverlay.addEventListener('click', (e) => {
             if (e.target === modalOverlay) {
                 modalOverlay.classList.remove('active');
+                // Keep message in input so user doesn't lose it
+                pendingMessage = '';
             }
         });
 
@@ -1082,17 +1096,29 @@
 
         // Schedule option
         scheduleOption.addEventListener('click', () => {
-            const message = messageInput.value.trim() || "Can you help me create a comprehensive analysis of this topic?";
+            // Use the stored pending message, or fallback
+            const message = pendingMessage || "Can you help me create a comprehensive analysis of this topic?";
             
             // Add scheduled message to chat
             addScheduledMessage(message);
             
-            // Clear input and hide modal
+            // Clear pending and input
+            pendingMessage = '';
             messageInput.value = '';
             messageInput.style.height = 'auto';
             modalOverlay.classList.remove('active');
-            
-            // Keep input in normal state (not disabled)
+        });
+
+        // Pay per use option - send as normal message
+        document.getElementById('payPerUseOption').addEventListener('click', () => {
+            modalOverlay.classList.remove('active');
+            sendAsNormalMessage();
+        });
+
+        // Upgrade option - send as normal message
+        document.getElementById('upgradeOption').addEventListener('click', () => {
+            modalOverlay.classList.remove('active');
+            sendAsNormalMessage();
         });
     </script>
 </body>
