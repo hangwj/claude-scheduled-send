@@ -326,8 +326,8 @@
 
         /* Edit State */
         .message.scheduled.editing .message-content {
-            border: 2px solid #3B82F6;
-            border-left: 3px solid #3B82F6;
+            border: 2px solid #C0BCB7;
+            border-left: 3px solid #C0BCB7;
             padding-bottom: 12px;
         }
 
@@ -346,10 +346,10 @@
 
         .edit-textarea {
             width: 100%;
-            min-height: 80px;
-            padding: 12px;
+            min-height: 100px;
+            padding: 12px 16px;
             border: 1px solid #E0DDD8;
-            border-radius: 8px;
+            border-radius: 12px;
             font-family: inherit;
             font-size: 15px;
             line-height: 1.6;
@@ -360,7 +360,7 @@
 
         .edit-textarea:focus {
             outline: none;
-            border-color: #3B82F6;
+            border-color: #C0BCB7;
         }
 
         .edit-info {
@@ -368,7 +368,7 @@
             align-items: center;
             gap: 6px;
             font-size: 13px;
-            color: #3B82F6;
+            color: #666;
             margin-bottom: 12px;
         }
 
@@ -390,7 +390,7 @@
         .edit-btn.cancel {
             background: white;
             border: 1px solid #E0DDD8;
-            color: #666;
+            color: #1F1F1F;
         }
 
         .edit-btn.cancel:hover {
@@ -399,13 +399,13 @@
         }
 
         .edit-btn.save {
-            background: #3B82F6;
+            background: #666;
             border: none;
             color: white;
         }
 
         .edit-btn.save:hover {
-            background: #2563EB;
+            background: #555;
         }
 
         /* Copy Feedback */
@@ -922,9 +922,9 @@
             editContainer.innerHTML = `
                 <textarea class="edit-textarea">${content}</textarea>
                 <div class="edit-info">
-                    <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
-                        <circle cx="8" cy="8" r="7" fill="none" stroke="currentColor" stroke-width="1.5"/>
-                        <text x="8" y="12" text-anchor="middle" font-size="10" fill="currentColor">i</text>
+                    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#666" stroke-width="1.5">
+                        <circle cx="8" cy="8" r="6"/>
+                        <path d="M8 7v4M8 5v0.5"/>
                     </svg>
                     This scheduled message will be updated.
                 </div>
