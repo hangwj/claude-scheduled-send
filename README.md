@@ -4,8 +4,6 @@ An interactive UI prototype exploring a "scheduled send" feature for Claude. Whe
 
 **[Live Demo](https://whoats.github.io/claude-scheduled-send/)** *(update with your actual URL)*
 
-> **Disclaimer:** This is an unofficial prototype for demonstration purposes only. Not affiliated with Anthropic.
-
 ## The Concept
 
 When users reach their Claude usage limit, they currently have two options: wait or pay more. This prototype explores a third option — **schedule for later**.
@@ -14,6 +12,8 @@ Instead of losing their train of thought, users could:
 - Queue their message to send when limits reset
 - Edit or cancel scheduled messages
 - Get notified when Claude responds
+
+For the full product rationale, see the **[Product Brief](PRODUCT_BRIEF.md)**.
 
 ## Try It Out
 
@@ -32,6 +32,10 @@ Instead of losing their train of thought, users could:
 - Edit scheduled messages inline
 - Cancel with confirmation dialog
 - Copy message to clipboard
+
+## Disclaimer
+
+This is an independent project, not affiliated with or endorsed by Anthropic. The prototype and product brief were created as a design exploration—an exercise in imagining how a "scheduled send" feature might work and what product considerations would shape its design. No insider knowledge, just curiosity about a problem worth solving.
 
 ## License
 
