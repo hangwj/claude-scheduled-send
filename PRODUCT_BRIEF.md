@@ -72,7 +72,7 @@ Add a third option to the usage limit modal: **"Schedule for later"**
 
 When selected:
 - Message is queued and saved
-- Input area transforms into a scheduled message card
+- Scheduled message appears in chat with a "Scheduled" badge
 - Message auto-sends immediately when limit resets
 - User receives notification when Claude's response is ready
 
@@ -82,7 +82,7 @@ When selected:
 |----------|--------|-----------|
 | Entry point | Add to existing limit modal | Peer to existing options |
 | Queue limit | One message per conversation | Prevents complexity and abuse |
-| Queue visibility | Replaces input area in that chat | Contextual, clear |
+| Queue visibility | Appears as message in chat with badge | Contextual, clear, matches existing message pattern |
 | Send trigger | Auto-send on limit reset | Preserves intent without requiring return |
 | Notification | On response complete | Value is the response |
 | Edit/Cancel | Inline editing | Native to chat context |
@@ -90,7 +90,7 @@ When selected:
 ### User Flow
 
 1. User hits limit → modal with "Schedule for later" option
-2. User selects → input transforms to scheduled message card
+2. User selects → scheduled message appears in chat with badge
 3. User can edit or cancel while waiting
 4. Limit resets → message auto-sends
 5. Claude responds → push notification sent

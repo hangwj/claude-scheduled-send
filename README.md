@@ -2,8 +2,6 @@
 
 An interactive UI prototype exploring a "scheduled send" feature for Claude. When users hit their usage limits, they could queue messages to send automatically when limits reset.
 
-**[Live Demo](https://whoats.github.io/claude-scheduled-send/)** *(update with your actual URL)*
-
 ## The Concept
 
 When users reach their Claude usage limit, they currently have two options: wait or pay more. This prototype explores a third option — **schedule for later**.
