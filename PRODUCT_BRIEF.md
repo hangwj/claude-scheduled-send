@@ -5,7 +5,9 @@
 
 ## Problem Statement
 
-When users hit their usage limit, they face a binary choice: pay now or abandon their thought. The current experience offers Subscribe to Max ($100-200/month) or Pay-per-usage.
+When you're in flow—deep in thought, working through a problem with Claude—hitting the usage limit is jarring. Your train of thought doesn't stop just because the session did.
+
+The current options? Upgrade to Pro ($20/mo), Max 5x ($100/mo), or Max 20x ($200/mo). For users outside the US, especially in regions like Southeast Asia, these prices hit differently after currency conversion. "Just upgrade" isn't always feasible.
 
 **The gap**: Users who are willing to wait but don't want to lose their train of thought or switch platforms to continue their work.
 
@@ -33,7 +35,7 @@ The middle segment is the opportunity. These users are price-sensitive—Max at 
 
 1. **Retention > acquisition**: Keeping engaged free users costs less than acquiring new ones
 2. **Lifetime value**: Users who stay 12 months and eventually convert beat those who churn at month 1
-3. **Global expansion**: Pricing reasonable in San Francisco is prohibitive in Malaysia, Brazil, or Poland
+3. **Global expansion**: Pricing reasonable in San Francisco could be out of reach for users in Malaysia, Indonesia, Philippines, or India
 
 **The risk of NOT doing this:**
 
@@ -45,9 +47,7 @@ Users who hit the limit switch to ChatGPT or Gemini to continue their work. This
 
 ### Brand Alignment
 
-Claude's tagline is **"Keep thinking"**—a thinking partner for problem solvers who can't let go of an idea.
-
-> "Claude is for those who see AI not as a shortcut, but as a thinking partner to take on their most meaningful challenges."
+Claude positions itself as a thinking partner—for problem solvers who can't let go of an idea. The kind of users who see AI not as a shortcut, but as a collaborator for their most meaningful challenges.
 
 Hitting a limit forces thinking to stop. Scheduled Send turns a hard stop into a pause—aligning product behavior with brand promise.
 
@@ -60,7 +60,7 @@ Free and Pro users who hit limits regularly but don't convert to Max.
 **Characteristics:**
 - Price-sensitive (Max is a significant commitment, especially outside US)
 - High-intent (want to continue, can't afford to right now)
-- Global users where USD pricing is prohibitive
+- Global users where USD pricing is out of reach
 
 **Behavioral signal**: Users who dismiss the upgrade modal and switch to competitor platforms to finish their task.
 
@@ -152,7 +152,7 @@ This is an independent project, not affiliated with or endorsed by Anthropic. Th
 
 ---
 
-*v1.0 | January 2025*
+*v1.1 | March 2026*
 
 ---
 
