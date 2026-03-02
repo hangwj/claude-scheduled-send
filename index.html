@@ -113,7 +113,7 @@
 
         /* Input Area */
         .input-container {
-            padding: 20px;
+            padding: 16px 20px;
             background: #FAF9F6;
         }
 
@@ -129,8 +129,8 @@
             justify-content: space-between;
             background: #F5EDE4;
             border-radius: 12px;
-            padding: 12px 16px;
-            margin-bottom: 12px;
+            padding: 10px 16px;
+            margin-bottom: 10px;
             font-size: 13px;
             color: #5C4A3A;
         }
@@ -171,7 +171,7 @@
             font-size: 15px;
             font-family: inherit;
             width: 100%;
-            min-height: 100px;
+            min-height: 85px;
             resize: none;
             color: #1F1F1F;
             transition: border-color 0.15s;
@@ -241,6 +241,33 @@
             background: #E0DDD8;
             cursor: not-allowed;
             opacity: 0.6;
+        }
+
+        /* Footer Links */
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            margin-top: 12px;
+            font-size: 13px;
+        }
+
+        .footer-label {
+            color: #999;
+        }
+
+        .footer-links a {
+            color: #666;
+            text-decoration: none;
+        }
+
+        .footer-links a:hover {
+            text-decoration: underline;
+        }
+
+        .footer-divider {
+            color: #C0BCB7;
         }
 
         /* Scheduled Message Styles */
@@ -713,6 +740,14 @@
                                 </svg>
                             </button>
                         </div>
+                    </div>
+
+                    <!-- Footer Links -->
+                    <div class="footer-links">
+                        <span class="footer-label">Learn more:</span>
+                        <a href="https://github.com/hangwj/claude-scheduled-send/blob/main/PRODUCT_BRIEF.md" target="_blank">Product Brief</a>
+                        <span class="footer-divider">|</span>
+                        <a href="https://medium.com/@hangwj/what-if-claude-had-scheduled-send-e9312dd24a2a" target="_blank">Medium</a>
                     </div>
 
                 </div>
